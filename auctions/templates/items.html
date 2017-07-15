@@ -83,9 +83,17 @@
         <div class="card-columns">
             {% for item in items %}
                 <div class="card">
-                    <a href="/auctioneers/{{ item.auctioneer.slug }}/auctions/{{ item.auction.slug }}/items/{{ item.slug }}/"><img
-                            class="card-img-top img-fluid" src="{{ item.item_pictures }}"
-                            alt="{{ item.name }}"></a> {{ item.item_pictures.all }}
+                    {% for picture in item.item_pictures.all %}
+                        <img
+                            class="card-img-top img-fluid" src="{{ picture.picture.url }}"
+                            alt="{{ item.name }}">
+                    {% endfor %}
+
+{#                    {% with item.primary_picture as primary_picture %}#}
+{#                        <a href="/auctioneers/{{ item.auctioneer.slug }}/auctions/{{ item.auction.slug }}/items/{{ item.slug }}/"><img#}
+{#                                class="card-img-top img-fluid" src="{{ primary_picture.picture.url }}"#}
+{#                                alt="{{ item.name }}"></a> {{ primary_picture.picture.url }}#}
+{#                    {%  endwith %}#}
 
                     <div class="card-block">
                         <h4 class="card-title"><a

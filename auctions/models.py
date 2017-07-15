@@ -1,10 +1,15 @@
+import csv
+from io import BytesIO
+
 from django.db import models
-from django.db.models import CharField, TextField, BooleanField, IntegerField, SlugField, ImageField
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import CharField, TextField, BooleanField, IntegerField, SlugField
+from sorl.thumbnail import ImageField, get_thumbnail
+from django.core.files.uploadedfile import SimpleUploadedFile
 # from django.db.models.signals import pre_save
 # from django.utils.text import slugify
 # from uuslug import slugify
 from uuslug import uuslug
-import csv
 
 
 class Auction(models.Model):
@@ -92,6 +97,12 @@ class Item(models.Model):
     def __str__(self):
         return self.name
 
+    def primary_picture(self):
+        try:
+            return self.item_pictures.get(primary=True)
+        except ObjectDoesNotExist:
+            return None
+
     def save(self, *args, **kwargs):
         self.slug = uuslug(self.name, instance=self)
         super(Item, self).save(*args, **kwargs)
@@ -107,6 +118,7 @@ class Auctioneer(models.Model):
     activated = models.BooleanField(default=False, verbose_name='Activated')
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
+
     #    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, verbose_name='User')
     #    user = models.ManyToManyField(User)
 
@@ -159,16 +171,27 @@ class ItemPicture(models.Model):
     name = CharField(max_length=256, verbose_name='Name', blank=True, null=True, default=" ")
     primary = BooleanField(default=False)
     order = IntegerField(default=0)
+
     picture = ImageField(blank=True, null=True, verbose_name='Picture')
+    smallThumbnail = ImageField(blank=True, null=True, verbose_name='Thumbnail (small)')
+    mediumThumbnail = ImageField(blank=True, null=True, verbose_name='Thumbnail (medium)')
+
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
     item = models.ForeignKey("Item", on_delete=models.CASCADE, blank=True, null=True, verbose_name='Item',
                              related_name="item_pictures")
 
-    # def __str__(self):
-    #     return self.name
-    def test(self):
-        return "test"
+    def save(self, *args, **kwargs):
+        if not self.id:
+            super(ItemPicture, self).save(*args, **kwargs)
+
+            small_image = get_thumbnail(self.picture.name, '30x30', crop='center', quality=99)
+            self.smallThumbnail.save(small_image.name, BytesIO(small_image.read()), True)
+
+            medium_image = get_thumbnail(self.picture.name, '100x100', crop='center', quality=99)
+            self.mediumThumbnail.save(medium_image.name, BytesIO(medium_image.read()), True)
+
+        super(ItemPicture, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ('-primary', 'order')

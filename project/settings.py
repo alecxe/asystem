@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'storages',
+    'sorl.thumbnail',
     'auctions',
     'accounts',
     'tasks',
@@ -92,23 +93,23 @@ WSGI_APPLICATION = 'project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#    }
-#}
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'asystem',                      # Or path to database file if using sqlite3.
-        'USER': 'django_login',                      # Not used with sqlite3.
-        'PASSWORD': '1209qwpo',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-    }
+   'default': {
+       'ENGINE': 'django.db.backends.sqlite3',
+       'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+   }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+#         'NAME': 'asystem',                      # Or path to database file if using sqlite3.
+#         'USER': 'django_login',                      # Not used with sqlite3.
+#         'PASSWORD': '1209qwpo',                  # Not used with sqlite3.
+#         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+#         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+#     }
+#}
 
 # DATABASES = {
 #     'default': config(
@@ -159,11 +160,14 @@ AUTH_USER_MODEL = 'accounts.User'
 # django-storages
 # pip install django-storages
 # http://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
-# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-# AWS_ACCESS_KEY_ID = 'YOUR_KEY'
-# AWS_SECRET_ACCESS_KEY = 'YOUR_SECRET'
-# AWS_STORAGE_BUCKET_NAME = 'BUCK'
+AWS_ACCESS_KEY_ID = 'AKIAJGTT4MXSYQNM2SRQ'
+AWS_SECRET_ACCESS_KEY = 'zCrIWKcKPBleSFA7cEyOkBbIfHRjCoVi+vUYfg0N'
+AWS_STORAGE_BUCKET_NAME = 'asystem-test'
+
+THUMBNAIL_KVSTORE = 'sorl.thumbnail.kvstores.cached_db_kvstore.KVStore'
+# THUMBNAIL_BACKEND = 'auctions.thumbnail_backend.MyThumbnailBackend'
 
 # boto3
 # pip install boto3
