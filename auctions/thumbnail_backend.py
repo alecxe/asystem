@@ -1,14 +1,16 @@
-from sorl.thumbnail.base import ThumbnailBackend, EXTENSIONS
-from sorl.thumbnail.conf import settings
-from sorl.thumbnail.helpers import tokey, serialize
+from sorl.thumbnail.base import ThumbnailBackend
 
+
+DIR_MAP = {
+    '30x30': 'small',
+    '100x100': 'medium'
+}
 
 class MyThumbnailBackend(ThumbnailBackend):
     def _get_thumbnail_filename(self, source, geometry_string, options):
         """
         Computes the destination filename.
         """
-        key = tokey(source.key, geometry_string, serialize(options))
-        path = '%s/%s/%s' % (key[:2], key[2:4], key)
-        print(path)
-        return '%s%s.%s' % (settings.THUMBNAIL_PREFIX, path, EXTENSIONS[options['format']])
+        dir_name = DIR_MAP.get(geometry_string, '')
+        path = dir_name + "/" + dir_name + "_" + source.name
+        return path

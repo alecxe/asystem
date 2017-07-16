@@ -173,8 +173,8 @@ class ItemPicture(models.Model):
     order = IntegerField(default=0)
 
     picture = ImageField(blank=True, null=True, verbose_name='Picture')
-    smallThumbnail = ImageField(blank=True, null=True, verbose_name='Thumbnail (small)')
-    mediumThumbnail = ImageField(blank=True, null=True, verbose_name='Thumbnail (medium)')
+    small_thumbnail = ImageField(blank=True, null=True, verbose_name='Thumbnail (small)')
+    medium_thumbnail = ImageField(blank=True, null=True, verbose_name='Thumbnail (medium)')
 
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
@@ -186,12 +186,61 @@ class ItemPicture(models.Model):
             super(ItemPicture, self).save(*args, **kwargs)
 
             small_image = get_thumbnail(self.picture.name, '30x30', crop='center', quality=99)
-            self.smallThumbnail.save(small_image.name, BytesIO(small_image.read()), True)
+            self.small_thumbnail.save(small_image.name, BytesIO(small_image.read()), True)
 
             medium_image = get_thumbnail(self.picture.name, '100x100', crop='center', quality=99)
-            self.mediumThumbnail.save(medium_image.name, BytesIO(medium_image.read()), True)
+            self.medium_thumbnail.save(medium_image.name, BytesIO(medium_image.read()), True)
 
         super(ItemPicture, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ('-primary', 'order')
+
+
+class Address(models.Model):
+    # https://github.com/SmileyChris/django-countries/blob/master/django_countries/data.py
+
+    COUNTRY_CHOICES = (
+        ('US', 'USA'),
+        ('CA', 'Canada'),
+    )
+    STATE_CHOICES = (
+        ('NY', 'New York'),
+        ('QC', 'Quebec'),
+        ('ON', 'Ontario'),
+    )
+    name = models.CharField("Name", max_length=45, blank=True, null=True)
+    address_line1 = models.CharField("Address line 1", max_length=45, blank=True, null=True)
+    address_line2 = models.CharField("Address line 2", max_length=45, blank=True, null=True)
+    zip_code = models.CharField("Zip Code", max_length=10, blank=True, null=True)
+    city = models.CharField(max_length=50, blank=True, null=True)
+    state_province = models.CharField("State/Province", max_length=2, blank=True, null=True, choices=STATE_CHOICES)
+    country = models.CharField("Country", max_length=2, blank=True, null=True, choices=COUNTRY_CHOICES)
+    primary = BooleanField(default=False)
+
+    def __str__(self):
+        return "%s, %s %s %s %s" % (self.address_line1, self.city, self.state_province, self.zip_code, self.country)
+
+    class Meta:
+        verbose_name_plural = "Addresses"
+        # unique_together = ("address_line1", "address_line2", "postal_code", "city", "state_province", "country")
+
+
+class AuctioneerAddress(Address):
+    auctioneer = models.ForeignKey("Auctioneer", on_delete=models.CASCADE, verbose_name='Address', blank=True, null=True,
+                                related_name="auctioneer_address")
+
+    class Meta:
+        verbose_name = "Address"
+        verbose_name_plural = "Addresses"
+        ordering = ('-primary',)
+
+
+class AuctioneerShippingAddress(Address):
+    auctioneer = models.ForeignKey("Auctioneer", on_delete=models.CASCADE, verbose_name='Address', blank=True, null=True,
+                                related_name="auctioneer_shipping_address")
+
+    class Meta:
+        verbose_name = "Shipping Address"
+        verbose_name_plural = "Shipping Addresses"
+        ordering = ('-primary',)

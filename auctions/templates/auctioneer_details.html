@@ -6,10 +6,16 @@
     <div class="jumbotron jumbotron-fluid">
         <div class="container">
             <h1 class="display-3">{{ auctioneer.name }}</h1>
+
             <p class="lead">{% if auctioneer.motto %}{{ auctioneer.motto|title }}{% else %}&nbsp;{% endif %}</p>
         </div>
     </div>
 {% endblock %}
 
 {% block content %}
+
+    {% if auctioneer.auctioneer_address.count > 0 %}
+        {% include 'includes/google_map.html' with address=auctioneer.auctioneer_address.all info=auctioneer.name %}
+    {% endif %}
+
 {% endblock %}

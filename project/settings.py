@@ -162,12 +162,12 @@ AUTH_USER_MODEL = 'accounts.User'
 # http://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-AWS_ACCESS_KEY_ID = 'AKIAJGTT4MXSYQNM2SRQ'
-AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'asystem-test'
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
 
 THUMBNAIL_KVSTORE = 'sorl.thumbnail.kvstores.cached_db_kvstore.KVStore'
-# THUMBNAIL_BACKEND = 'auctions.thumbnail_backend.MyThumbnailBackend'
+THUMBNAIL_BACKEND = 'auctions.thumbnail_backend.MyThumbnailBackend'
 
 # boto3
 # pip install boto3
